@@ -42,6 +42,9 @@
     <ClInclude Include="MACFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SerializedData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MACFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SerializedData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

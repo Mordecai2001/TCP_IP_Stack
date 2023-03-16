@@ -134,6 +134,7 @@
     <ClInclude Include="MACFrame.h" />
     <ClInclude Include="MACHeader.h" />
     <ClInclude Include="Protocol.h" />
+    <ClInclude Include="SerializedData.h" />
     <ClInclude Include="TCPHeader.h" />
     <ClInclude Include="TCPSegment.h" />
   </ItemGroup>
@@ -145,6 +146,7 @@
     <ClCompile Include="MACFrame.cpp" />
     <ClCompile Include="MACHeader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SerializedData.cpp" />
     <ClCompile Include="TCPHeader.cpp" />
     <ClCompile Include="TCPSegment.cpp" />
   </ItemGroup>

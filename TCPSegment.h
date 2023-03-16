@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <string>
 #include "HTTPRequestMSG.h"
 #include "TCPHeader.h"
 
@@ -14,6 +15,7 @@ public:
     void setHTTPRequestMSG(const HTTPRequestMSG& newHTTPRequestMSG);
 
     void print() const;
+
 
 private:
     void initializeTCPHeaderDefaults();

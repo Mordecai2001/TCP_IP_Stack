@@ -50,3 +50,11 @@ void MACFrame::initializeMACHeaderDefaults() {
     macHeader.setSourceMAC(0x112233445566);
     macHeader.setDestinationMAC(0xAABBCCDDEEFF);
 }
+
+const std::string& MACFrame::getSerializedHTTPRequest() const {
+    return serializedHTTPRequest;
+}
+
+void MACFrame::setSerializedHTTPRequest(const std::string& newSerializedHTTPRequest) {
+    serializedHTTPRequest = newSerializedHTTPRequest;
+}

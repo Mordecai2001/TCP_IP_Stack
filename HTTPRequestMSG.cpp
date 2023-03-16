@@ -59,3 +59,25 @@ void HTTPRequestMSG::parseHeaderField(const std::string& line) {
 
     httpHeader.setHeaderField(key, value);
 }
+
+void HTTPRequestMSG::parseSerializedHTTPRequest(const std::string& serializedHTTPRequest) {
+    std::istringstream inputStream(serializedHTTPRequest);
+    std::string line;
+
+    // Parse the request line
+    std::getline(inputStream, line);
+    parseRequestLine(line);
+
+    // Parse the header fields
+    while (std::getline(inputStream, line) && line != "\r") {
+        parseHeaderField(line);
+    }
+
+    // If there is a body, read it (for POST requests)
+    if (method == "POST") {
+        std::string postData;
+        std::getline(inputStream, postData);
+        // Here, you can handle the POST data as required
+    }
+}
+

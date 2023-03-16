@@ -13,10 +13,11 @@ public:
     std::string getRequestMethod() const;
     const std::map<std::string, std::string>& getHeaders() const;
     void print() const;
-
-private:
     void parseRequestLine(const std::string& line);
     void parseHeaderField(const std::string& line);
+    void parseSerializedHTTPRequest(const std::string& serializedHTTPRequest);
+
+private:
 
     std::string method;
     std::string uri;

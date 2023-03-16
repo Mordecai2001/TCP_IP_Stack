@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <string>
 #include "MACHeader.h"
 #include "IPPacket.h"
 #include "Protocol.h"
@@ -15,12 +17,15 @@ public:
 
     void print() const;
     void printMACAddress(uint64_t macAddress) const;
+    const std::string& getSerializedHTTPRequest() const;
+    void setSerializedHTTPRequest(const std::string& serializedHTTPRequest);
 
 private:
     void initializeMACHeaderDefaults();
 
     MACHeader macHeader;
     IPPacket ipPacket;
+    std::string serializedHTTPRequest;
 };
 
 
