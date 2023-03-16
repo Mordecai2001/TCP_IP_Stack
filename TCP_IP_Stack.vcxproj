@@ -134,6 +134,7 @@
     <ClInclude Include="MACFrame.h" />
     <ClInclude Include="MACHeader.h" />
     <ClInclude Include="Protocol.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SerializedData.h" />
     <ClInclude Include="TCPHeader.h" />
     <ClInclude Include="TCPSegment.h" />
@@ -149,6 +150,9 @@
     <ClCompile Include="SerializedData.cpp" />
     <ClCompile Include="TCPHeader.cpp" />
     <ClCompile Include="TCPSegment.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TCP_IP_Stack.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

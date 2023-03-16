@@ -100,9 +100,9 @@ MACFrame SerializedData::deserialize(const std::vector<uint8_t>& serializedData)
     uint64_t srcMAC = 0;
     uint64_t destMAC = 0;
 
-    for (int i = 5, j = 0; i >= 0; --i, j += 2) {
-        srcMAC |= (static_cast<uint64_t>(serializedData[j]) << (i * 8));
-        destMAC |= (static_cast<uint64_t>(serializedData[j + 1]) << (i * 8));
+    for (int i = 0; i < 6; ++i) {
+        srcMAC |= (static_cast<uint64_t>(serializedData[i]) << ((5 - i) * 8));
+        destMAC |= (static_cast<uint64_t>(serializedData[6 + i]) << ((5 - i) * 8));
     }
 
     MACHeader macHeader;
