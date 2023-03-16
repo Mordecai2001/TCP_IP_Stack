@@ -1,0 +1,26 @@
+#pragma once
+#include "MACHeader.h"
+#include "IPPacket.h"
+#include "Protocol.h"
+
+class MACFrame : public Protocol {
+public:
+    void encapsulateIPPacket(const IPPacket& ipPacket);
+
+    const MACHeader& getMACHeader() const;
+    void setMACHeader(const MACHeader& newMACHeader);
+
+    const IPPacket& getIPPacket() const;
+    void setIPPacket(const IPPacket& newIPPacket);
+
+    void print() const;
+    void printMACAddress(uint64_t macAddress) const;
+
+private:
+    void initializeMACHeaderDefaults();
+
+    MACHeader macHeader;
+    IPPacket ipPacket;
+};
+
+

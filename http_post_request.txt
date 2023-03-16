@@ -1,0 +1,12 @@
+POST / HTTP/1.1\r\n
+Host: localhost:80\r\n
+User-Agent: Mozilla/5.0; Firefox/80.0 \r\n
+Accept: text/html,application/xhtml+xml\r\n
+Accept-Language: en-us,en;q=0.5\r\n
+Accept-Encoding: gzip,deflate\r\n
+Connection: keep-alive\r\n
+content-type: multimedia/form-data
+Conetent-Length: 345
+
+-12656974
+\r\n
