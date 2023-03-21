@@ -6,6 +6,7 @@
 #include <iostream>
 #include <bitset>
 
+
 int main() {
     // Test the implementation
     HTTPRequestMSG httpRequest;

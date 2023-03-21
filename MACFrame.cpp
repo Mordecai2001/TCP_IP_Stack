@@ -2,11 +2,11 @@
 #include <iostream>
 #include <iomanip>
 
-void MACFrame::encapsulateIPPacket(const IPPacket& ipPacket) {
+void MACFrame::encapsulateIPPacket(const IPPacket& newIpPacket) {
     initializeMACHeaderDefaults();
     setIn(new IPPacket(ipPacket));
     setOut(this);
-    this->ipPacket = ipPacket;
+    ipPacket = newIpPacket;
 }
 
 const MACHeader& MACFrame::getMACHeader() const {

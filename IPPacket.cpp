@@ -1,13 +1,14 @@
 #include "IPPacket.h"
 #include <iostream>
+#include <cstdint>
 
-void IPPacket::encapsulateTCPSegment(const TCPSegment& tcpSegment) {
+void IPPacket::encapsulateTCPSegment(const TCPSegment& newTcpSegment) {
     initializeIPHeaderDefaults();
 
     setIn(new TCPSegment(tcpSegment));
 
     setOut(this);
-    this->tcpSegment = tcpSegment;
+    tcpSegment = newTcpSegment;
 }
 
 const IPHeader& IPPacket::getIPHeader() const {
@@ -36,7 +37,8 @@ void IPPacket::print() const {
     std::cout << "Identification: " << static_cast<unsigned>(ipHeader.getIdentification()) << std::endl;
     std::cout << "Flags: " << static_cast<unsigned>(ipHeader.getFlags()) << std::endl;
     std::cout << "Fragment Offset: " << static_cast<unsigned>(ipHeader.getFragmentOffset()) << std::endl;
-    std::cout << "Time to Live: " << static_cast<unsigned>(ipHeader.getTimeToLive()) << std::endl;
+    uint8_t ttl = ipHeader.getTimeToLive();
+    std::cout << "Time to Live: "<< std::dec << static_cast<int>(ttl)<< std::endl;
     std::cout << "Protocol: " << static_cast<unsigned>(ipHeader.getProtocol()) << std::endl;
     std::cout << "Checksum: " << static_cast<unsigned>(ipHeader.getChecksum()) << std::endl;
     std::cout << "Source IP: " << ipHeader.getSourceIP() << std::endl;

@@ -1,4 +1,5 @@
 #include "SerializedData.h"
+#include <iostream>
 
 std::vector<uint8_t> SerializedData::serialize(const MACFrame& macFrame) {
     std::vector<uint8_t> data;
@@ -39,17 +40,20 @@ std::vector<uint8_t> SerializedData::serialize(const MACFrame& macFrame) {
     const std::string& destinationIP = ipHeader.getDestinationIP();
     std::stringstream srcIPStream(sourceIP);
     std::stringstream destIPStream(destinationIP);
-    uint8_t octet;
+    uint32_t octet;
     char dot;
 
-    while (srcIPStream >> octet) {
-        data.push_back(octet);
-        srcIPStream >> dot;
+    for (int i = 0; i < 4; ++i) {
+        srcIPStream >> octet;
+        data.push_back(static_cast<uint8_t>(octet));
+        if (i < 3) srcIPStream >> dot;
     }
-    while (destIPStream >> octet) {
-        data.push_back(octet);
-        destIPStream >> dot;
+    for (int i = 0; i < 4; ++i) {
+        destIPStream >> octet;
+        data.push_back(static_cast<uint8_t>(octet));
+        if (i < 3) destIPStream >> dot;
     }
+
 
     // Serialize TCPHeader
     uint16_t sourcePort = tcpHeader.getSourcePort();
@@ -133,13 +137,18 @@ MACFrame SerializedData::deserialize(const std::vector<uint8_t>& data) {
     std::stringstream srcIPStream;
     std::stringstream destIPStream;
     for (int i = 0; i < 4; ++i) {
-        srcIPStream << static_cast<uint32_t>(data[index++]);
+        srcIPStream << static_cast<uint32_t>(data[index]);
         if (i < 3) srcIPStream << '.';
-        destIPStream << static_cast<uint32_t>(data[index++]);
+        index++;
+    }
+    for (int i = 0; i < 4; ++i) {
+        destIPStream << static_cast<uint32_t>(data[index]);
         if (i < 3) destIPStream << '.';
+        index++;
     }
     ipHeader.setSourceIP(srcIPStream.str());
     ipHeader.setDestinationIP(destIPStream.str());
+
 
     // Deserialize TCPHeader
     TCPHeader tcpHeader;
