@@ -11,6 +11,8 @@ class HTTPRequestMSG : public Protocol {
 public:
     void readFile(const std::string& filename);
     std::string getRequestMethod() const;
+    std::string getHttpVersion() const;
+    std::string getUri() const;
     const std::map<std::string, std::string>& getHeaders() const;
     void print() const;
     void parseRequestLine(const std::string& line);

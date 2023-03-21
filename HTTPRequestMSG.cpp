@@ -29,6 +29,14 @@ std::string HTTPRequestMSG::getRequestMethod() const {
     return method;
 }
 
+std::string HTTPRequestMSG::getHttpVersion() const {
+    return httpVersion;
+}
+
+std::string HTTPRequestMSG::getUri() const {
+    return uri;
+}
+
 const std::map<std::string, std::string>& HTTPRequestMSG::getHeaders() const {
     return httpHeader.getHeaderFields();
 }

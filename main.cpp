@@ -9,7 +9,7 @@
 int main() {
     // Test the implementation
     HTTPRequestMSG httpRequest;
-    httpRequest.readFile("http_get_request.txt");
+    httpRequest.readFile("http_post_request.txt");
 
     // Print the HTTPRequestMSG
     std::cout << "HTTPRequestMSG:\n";
@@ -39,6 +39,7 @@ int main() {
     std::cout << "\nMACFrame:\n";
     macFrame.print();
 
+    
     // Create an instance of SerializedData
     SerializedData serializedData;
 
@@ -51,7 +52,7 @@ int main() {
         std::cout << std::bitset<8>(byte) << " ";
     }
     std::cout << std::endl;
-
+    
     // Deserialize the MACFrame
     MACFrame deserializedMACFrame = serializedData.deserialize(binaryData);
     std::cout << "\nDeserialized MACFrame:\n";
@@ -77,5 +78,6 @@ int main() {
     // Print the deserialized HTTPRequestMSG
     std::cout << "\nDeserialized HTTPRequestMSG:\n";
     deserializedHTTPRequest.print();
+    
 }
 

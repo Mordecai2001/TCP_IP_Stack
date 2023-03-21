@@ -1,199 +1,190 @@
 #include "SerializedData.h"
 
-
 std::vector<uint8_t> SerializedData::serialize(const MACFrame& macFrame) {
-    std::vector<uint8_t> serializedData;
+    std::vector<uint8_t> data;
 
-    // Serialize the MACHeader
+    // Serialize MACHeader
     uint64_t srcMAC = macFrame.getMACHeader().getSourceMAC();
     uint64_t destMAC = macFrame.getMACHeader().getDestinationMAC();
-
-    for (int i = 5; i >= 0; --i) {
-        serializedData.push_back((srcMAC >> (i * 8)) & 0xFF);
+    for (int i = 7; i >= 0; --i) {
+        data.push_back((srcMAC >> (8 * i)) & 0xFF);
+        data.push_back((destMAC >> (8 * i)) & 0xFF);
     }
 
-    for (int i = 5; i >= 0; --i) {
-        serializedData.push_back((destMAC >> (i * 8)) & 0xFF);
-    }
+    // Serialize IPPacket and its components
+    const IPPacket& ipPacket = macFrame.getIPPacket();
+    const IPHeader& ipHeader = ipPacket.getIPHeader();
+    const TCPSegment& tcpSegment = ipPacket.getTCPSegment();
+    const TCPHeader& tcpHeader = tcpSegment.getTCPHeader();
 
-    // Serialize the IPPacket and its components
-    // Serialize the IPHeader
-    const IPHeader& ipHeader = macFrame.getIPPacket().getIPHeader();
-    uint8_t versionAndHeaderLength = (ipHeader.getVersion() << 4) | ipHeader.getHeaderLength();
-    serializedData.push_back(versionAndHeaderLength);
-    serializedData.push_back(ipHeader.getTypeOfService());
-    serializedData.push_back((ipHeader.getTotalLength() >> 8) & 0xFF);
-    serializedData.push_back(ipHeader.getTotalLength() & 0xFF);
-    serializedData.push_back((ipHeader.getIdentification() >> 8) & 0xFF);
-    serializedData.push_back(ipHeader.getIdentification() & 0xFF);
-    serializedData.push_back(ipHeader.getFlags());
-    serializedData.push_back((ipHeader.getFragmentOffset() >> 8) & 0xFF);
-    serializedData.push_back(ipHeader.getFragmentOffset() & 0xFF);
-    serializedData.push_back(ipHeader.getTimeToLive());
-    serializedData.push_back(ipHeader.getProtocol());
-    serializedData.push_back((ipHeader.getChecksum() >> 8) & 0xFF);
-    serializedData.push_back(ipHeader.getChecksum() & 0xFF);
+    // Serialize IPHeader
+    data.push_back((ipHeader.getVersion() << 4) | ipHeader.getHeaderLength());
+    data.push_back(ipHeader.getTypeOfService());
+    uint16_t totalLength = ipHeader.getTotalLength();
+    data.push_back(totalLength >> 8);
+    data.push_back(totalLength & 0xFF);
+    uint16_t identification = ipHeader.getIdentification();
+    data.push_back(identification >> 8);
+    data.push_back(identification & 0xFF);
+    data.push_back((ipHeader.getFlags() << 5) | (ipHeader.getFragmentOffset() >> 8));
+    data.push_back(ipHeader.getFragmentOffset() & 0xFF);
+    data.push_back(ipHeader.getTimeToLive());
+    data.push_back(ipHeader.getProtocol());
+    uint16_t checksum = ipHeader.getChecksum();
+    data.push_back(checksum >> 8);
+    data.push_back(checksum & 0xFF);
 
-    // Serialize the source and destination IP addresses
-    std::istringstream srcIPStream(ipHeader.getSourceIP());
-    std::istringstream destIPStream(ipHeader.getDestinationIP());
+    // Serialize IP addresses as 4-byte values
+    const std::string& sourceIP = ipHeader.getSourceIP();
+    const std::string& destinationIP = ipHeader.getDestinationIP();
+    std::stringstream srcIPStream(sourceIP);
+    std::stringstream destIPStream(destinationIP);
     uint8_t octet;
+    char dot;
+
     while (srcIPStream >> octet) {
-        serializedData.push_back(octet);
-        if (srcIPStream.peek() == '.') {
-            srcIPStream.ignore();
-        }
+        data.push_back(octet);
+        srcIPStream >> dot;
     }
     while (destIPStream >> octet) {
-        serializedData.push_back(octet);
-        if (destIPStream.peek() == '.') {
-            destIPStream.ignore();
-        }
+        data.push_back(octet);
+        destIPStream >> dot;
     }
 
-    // Serialize the TCPSegment and its components
-    // Serialize the TCPHeader
-    const TCPHeader& tcpHeader = macFrame.getIPPacket().getTCPSegment().getTCPHeader();
-    serializedData.push_back((tcpHeader.getSourcePort() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getSourcePort() & 0xFF);
-    serializedData.push_back((tcpHeader.getDestinationPort() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getDestinationPort() & 0xFF);
-    serializedData.push_back((tcpHeader.getSequenceNumber() >> 24) & 0xFF);
-    serializedData.push_back((tcpHeader.getSequenceNumber() >> 16) & 0xFF);
-    serializedData.push_back((tcpHeader.getSequenceNumber() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getSequenceNumber() & 0xFF);
-    serializedData.push_back((tcpHeader.getAcknowledgmentNumber() >> 24) & 0xFF);
-    serializedData.push_back((tcpHeader.getAcknowledgmentNumber() >> 16) & 0xFF);
-    serializedData.push_back((tcpHeader.getAcknowledgmentNumber() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getAcknowledgmentNumber() & 0xFF);
-    serializedData.push_back(tcpHeader.getDataOffset() << 4);
-    serializedData.push_back(tcpHeader.getFlags());
-    serializedData.push_back((tcpHeader.getWindowSize() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getWindowSize() & 0xFF);
-    serializedData.push_back((tcpHeader.getChecksum() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getChecksum() & 0xFF);
-    serializedData.push_back((tcpHeader.getUrgentPointer() >> 8) & 0xFF);
-    serializedData.push_back(tcpHeader.getUrgentPointer() & 0xFF);
+    // Serialize TCPHeader
+    uint16_t sourcePort = tcpHeader.getSourcePort();
+    uint16_t destinationPort = tcpHeader.getDestinationPort();
+    data.push_back(sourcePort >> 8);
+    data.push_back(sourcePort & 0xFF);
+    data.push_back(destinationPort >> 8);
+    data.push_back(destinationPort & 0xFF);
 
-    // Serialize the HTTPRequestMSG
-    const HTTPRequestMSG& httpRequestMsg = macFrame.getIPPacket().getTCPSegment().getHTTPRequestMSG();
-    const std::map<std::string, std::string>& httpRequestHeaders = httpRequestMsg.getHeaders();
-
-    for (const auto& header : httpRequestHeaders) {
-        std::string headerLine = header.first + ": " + header.second + "\r\n";
-        for (char c : headerLine) {
-            serializedData.push_back(static_cast<uint8_t>(c));
-        }
+    uint32_t sequenceNumber = tcpHeader.getSequenceNumber();
+    uint32_t acknowledgmentNumber = tcpHeader.getAcknowledgmentNumber();
+    // Serialize sequence number and acknowledgment number
+    for (int i = 3; i >= 0; --i) {
+        data.push_back((sequenceNumber >> (8 * i)) & 0xFF);
+        data.push_back((acknowledgmentNumber >> (8 * i)) & 0xFF);
     }
 
-    // Add a blank line to indicate the end of headers
-    serializedData.push_back('\r');
-    serializedData.push_back('\n');
+    // Serialize data offset, flags, window size, checksum, and urgent pointer
+    data.push_back((tcpHeader.getDataOffset() << 4) | (tcpHeader.getFlags() >> 4));
+    data.push_back(tcpHeader.getFlags() & 0x0F);
+    uint16_t windowSize = tcpHeader.getWindowSize();
+    data.push_back(windowSize >> 8);
+    data.push_back(windowSize & 0xFF);
+    uint16_t tcpChecksum = tcpHeader.getChecksum();
+    data.push_back(tcpChecksum >> 8);
+    data.push_back(tcpChecksum & 0xFF);
+    uint16_t urgentPointer = tcpHeader.getUrgentPointer();
+    data.push_back(urgentPointer >> 8);
+    data.push_back(urgentPointer & 0xFF);
 
-    return serializedData;
+    // Serialize HTTPRequestMSG (as a string)
+    const HTTPRequestMSG& httpRequest = tcpSegment.getHTTPRequestMSG();
+    const std::map<std::string, std::string>& headers = httpRequest.getHeaders();
+    std::stringstream httpRequestStream;
+    httpRequestStream << httpRequest.getRequestMethod() << " "
+        << httpRequest.getUri() << " "
+        << httpRequest.getHttpVersion() << "\r\n";
+    for (const auto& header : headers) {
+        httpRequestStream << header.first << ": " << header.second << "\r\n";
+    }
+    httpRequestStream << "\r\n";
+
+    const std::string& httpRequestString = httpRequestStream.str();
+    for (const char& c : httpRequestString) {
+        data.push_back(static_cast<uint8_t>(c));
+    }
+
+    return data;
 }
 
-MACFrame SerializedData::deserialize(const std::vector<uint8_t>& serializedData) {
-    MACFrame macFrame;
+MACFrame SerializedData::deserialize(const std::vector<uint8_t>& data) {
+    size_t index = 0;
 
-    // Deserialize the MACHeader
+    // Deserialize MACHeader
     uint64_t srcMAC = 0;
     uint64_t destMAC = 0;
-
-    for (int i = 0; i < 6; ++i) {
-        srcMAC |= (static_cast<uint64_t>(serializedData[i]) << ((5 - i) * 8));
-        destMAC |= (static_cast<uint64_t>(serializedData[6 + i]) << ((5 - i) * 8));
+    for (int i = 7; i >= 0; --i) {
+        srcMAC |= static_cast<uint64_t>(data[index++]) << (8 * i);
+        destMAC |= static_cast<uint64_t>(data[index++]) << (8 * i);
     }
+    MACHeader macHeader(srcMAC, destMAC);
 
-    MACHeader macHeader;
-    macHeader.setSourceMAC(srcMAC);
-    macHeader.setDestinationMAC(destMAC);
-    macFrame.setMACHeader(macHeader);
-
-    // Deserialize the IPPacket and its components
-    IPPacket ipPacket;
-
-    // Deserialize the IPHeader
+    // Deserialize IPPacket and its components
     IPHeader ipHeader;
-    size_t index = 12;
-
-    uint8_t versionAndHeaderLength = serializedData[index++];
-    ipHeader.setVersion(versionAndHeaderLength >> 4);
-    ipHeader.setHeaderLength(versionAndHeaderLength & 0xF);
-    ipHeader.setTypeOfService(serializedData[index++]);
-    ipHeader.setTotalLength((serializedData[index] << 8) | serializedData[index + 1]);
+    ipHeader.setVersion(data[index] >> 4);
+    ipHeader.setHeaderLength(data[index++] & 0x0F);
+    ipHeader.setTypeOfService(data[index++]);
+    ipHeader.setTotalLength((data[index] << 8) | data[index + 1]);
     index += 2;
-    ipHeader.setIdentification((serializedData[index] << 8) | serializedData[index + 1]);
+    ipHeader.setIdentification((data[index] << 8) | data[index + 1]);
     index += 2;
-    ipHeader.setFlags(serializedData[index++]);
-    ipHeader.setFragmentOffset((serializedData[index] << 8) | serializedData[index + 1]);
+    ipHeader.setFlags(data[index] >> 5);
+    ipHeader.setFragmentOffset(((data[index] & 0x1F) << 8) | data[index + 1]);
     index += 2;
-    ipHeader.setTimeToLive(serializedData[index++]);
-    ipHeader.setProtocol(serializedData[index++]);
-    ipHeader.setChecksum((serializedData[index] << 8) | serializedData[index + 1]);
+    ipHeader.setTimeToLive(data[index++]);
+    ipHeader.setProtocol(data[index++]);
+    ipHeader.setChecksum((data[index] << 8) | data[index + 1]);
     index += 2;
 
-    // Deserialize the source and destination IP addresses
-    std::ostringstream srcIPStream;
-    std::ostringstream destIPStream;
+    // Deserialize IP addresses
+    std::stringstream srcIPStream;
+    std::stringstream destIPStream;
     for (int i = 0; i < 4; ++i) {
-        srcIPStream << static_cast<uint32_t>(serializedData[index++]);
-        if (i < 3) {
-            srcIPStream << '.';
-        }
+        srcIPStream << static_cast<uint32_t>(data[index++]);
+        if (i < 3) srcIPStream << '.';
+        destIPStream << static_cast<uint32_t>(data[index++]);
+        if (i < 3) destIPStream << '.';
     }
-    for (int i = 0; i < 4; ++i) {
-        destIPStream << static_cast<uint32_t>(serializedData[index++]);
-        if (i < 3) {
-            destIPStream << '.';
-        }
-    }
-
     ipHeader.setSourceIP(srcIPStream.str());
     ipHeader.setDestinationIP(destIPStream.str());
-    ipPacket.setIPHeader(ipHeader);
-    // Deserialize the TCPSegment and its components
-    TCPSegment tcpSegment;
 
-    // Deserialize the TCPHeader
+    // Deserialize TCPHeader
     TCPHeader tcpHeader;
-    tcpHeader.setSourcePort((serializedData[index] << 8) | serializedData[index + 1]);
+    tcpHeader.setSourcePort((data[index] << 8) | data[index + 1]);
     index += 2;
-    tcpHeader.setDestinationPort((serializedData[index] << 8) | serializedData[index + 1]);
+    tcpHeader.setDestinationPort((data[index] << 8) | data[index + 1]);
     index += 2;
-    tcpHeader.setSequenceNumber((serializedData[index] << 24) | (serializedData[index + 1] << 16) | (serializedData[index + 2] << 8) | serializedData[index + 3]);
-    index += 4;
-    tcpHeader.setAcknowledgmentNumber((serializedData[index] << 24) | (serializedData[index + 1] << 16) | (serializedData[index + 2] << 8) | serializedData[index + 3]);
-    index += 4;
-    uint8_t dataOffsetAndReserved = serializedData[index++];
-    tcpHeader.setDataOffset(dataOffsetAndReserved >> 4);
-    tcpHeader.setFlags(serializedData[index++]);
-    tcpHeader.setWindowSize((serializedData[index] << 8) | serializedData[index + 1]);
-    index += 2;
-    tcpHeader.setChecksum((serializedData[index] << 8) | serializedData[index + 1]);
-    index += 2;
-    tcpHeader.setUrgentPointer((serializedData[index] << 8) | serializedData[index + 1]);
-    index += 2;
-    tcpSegment.setTCPHeader(tcpHeader);
 
-    // Deserialize the HTTPRequestMsg
-    HTTPRequestMSG httpRequestMsg;
-
-    std::string serializedHTTPRequest;
-    for (; index < serializedData.size(); ++index) {
-        serializedHTTPRequest.push_back(static_cast<char>(serializedData[index]));
+    uint32_t seqNum = 0;
+    uint32_t ackNum = 0;
+    for (int i = 3; i >= 0; --i) {
+        seqNum |= (static_cast<uint32_t>(data[index++]) << (8 * i));
+        ackNum |= (static_cast<uint32_t>(data[index++]) << (8 * i));
     }
-    macFrame.setSerializedHTTPRequest(serializedHTTPRequest);
+    tcpHeader.setSequenceNumber(seqNum);
+    tcpHeader.setAcknowledgmentNumber(ackNum);
 
-    // Set the HTTPRequestMsg in the TCPSegment
-    tcpSegment.setHTTPRequestMSG(httpRequestMsg);
+    tcpHeader.setDataOffset(data[index] >> 4);
+    tcpHeader.setFlags((data[index++] & 0x0F) << 4 | data[index++]);
+    tcpHeader.setWindowSize((data[index] << 8) | data[index + 1]);
+    index += 2;
+    tcpHeader.setChecksum((data[index] << 8) | data[index + 1]);
+    index += 2;
+    tcpHeader.setUrgentPointer((data[index] << 8) | data[index + 1]);
+    index += 2;
 
-    // Set the deserialized TCPSegment into the IPPacket
+    // Deserialize HTTPRequestMSG
+    std::string httpRequestString(data.begin() + index, data.end());
+    HTTPRequestMSG httpRequest;
+    httpRequest.parseSerializedHTTPRequest(httpRequestString);
+
+    // Reconstruct TCPSegment, IPPacket, and MACFrame
+    TCPSegment tcpSegment;
+    tcpSegment.setTCPHeader(tcpHeader);
+    tcpSegment.setHTTPRequestMSG(httpRequest);
+
+    IPPacket ipPacket;
+    ipPacket.setIPHeader(ipHeader);
     ipPacket.setTCPSegment(tcpSegment);
 
-    // Set the deserialized IPPacket into the MACFrame
+    MACFrame macFrame;
+    macFrame.setMACHeader(macHeader);
     macFrame.setIPPacket(ipPacket);
 
     return macFrame;
 }
+
 
