@@ -101,6 +101,12 @@ std::vector<uint8_t> SerializedData::serialize(const MACFrame& macFrame) {
         data.push_back(static_cast<uint8_t>(c));
     }
 
+    // Serialize HTTP body
+    const std::string& httpBody = httpRequest.getBody();
+    for (const char& c : httpBody) {
+        data.push_back(static_cast<uint8_t>(c));
+    }
+
     return data;
 }
 
@@ -179,6 +185,22 @@ MACFrame SerializedData::deserialize(const std::vector<uint8_t>& data) {
     std::string httpRequestString(data.begin() + index, data.end());
     HTTPRequestMSG httpRequest;
     httpRequest.parseSerializedHTTPRequest(httpRequestString);
+
+    // Find the end of the HTTP headers
+    size_t endOfHeaders = httpRequestString.find("\r\n\r\n");
+    if (endOfHeaders != std::string::npos) {
+        endOfHeaders += 4; // Move past the "\r\n\r\n" separator
+    }
+    else {
+        endOfHeaders = httpRequestString.size();
+    }
+
+    // Deserialize HTTP body
+    std::string httpBody(data.begin() + index + endOfHeaders, data.end());
+    httpRequest.setBody(httpBody);
+
+    index += endOfHeaders;
+
 
     // Reconstruct TCPSegment, IPPacket, and MACFrame
     TCPSegment tcpSegment;

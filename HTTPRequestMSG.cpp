@@ -1,29 +1,40 @@
 #include "HTTPRequestMSG.h"
 
 void HTTPRequestMSG::readFile(const std::string& filename) {
-    std::ifstream file(filename);
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return;
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        throw std::runtime_error("Error opening file");
     }
 
-    // Read and parse the request line
-    std::string requestLine;
-    std::getline(file, requestLine);
-    parseRequestLine(requestLine);
-
-    // Read and parse the header fields
     std::string line;
-    while (std::getline(file, line)) {
-        if (line == "\r" || line.empty()) {
-            break; // End of headers
+    bool isRequestLine = true;
+    bool isHeader = true;
+
+    while (std::getline(inputFile, line)) {
+        if (isRequestLine) {
+            parseRequestLine(line);
+            isRequestLine = false;
         }
-        parseHeaderField(line);
+        else if (isHeader) {
+            if (line.empty()) {
+                isHeader = false;
+            }
+            else {
+                parseHeaderField(line);
+            }
+        }
+        else {
+            // Read the body content
+            body += line;
+            if (!inputFile.eof()) {
+                body += "\n";
+            }
+        }
     }
 
-    file.close();
+    inputFile.close();
 }
+
 
 std::string HTTPRequestMSG::getRequestMethod() const {
     return method;
@@ -41,11 +52,21 @@ const std::map<std::string, std::string>& HTTPRequestMSG::getHeaders() const {
     return httpHeader.getHeaderFields();
 }
 
+const std::string& HTTPRequestMSG::getBody() const {
+    return body;
+}
+
+void HTTPRequestMSG::setBody(const std::string& newBody) {
+    body = newBody;
+}
+
 void HTTPRequestMSG::print() const {
-    std::cout << "\nRequest method: " << getRequestMethod() << std::endl;
-    std::cout << "Request headers:\n";
+    std::cout<<"\n" << getRequestMethod() << getUri() << getHttpVersion() << std::endl;
     for (const auto& header : getHeaders()) {
         std::cout << header.first << ": " << header.second << std::endl;
+    }
+    if (!getBody().empty()) {
+        std::cout << "\nBody:\n" << getBody() << std::endl;
     }
 }
 
