@@ -5,7 +5,7 @@
 #include "SerializedData.h"
 #include <iostream>
 #include <bitset>
-
+#include <fstream>
 
 int main() {
     // Test the implementation
@@ -40,22 +40,30 @@ int main() {
     std::cout << "\nMACFrame:\n";
     macFrame.print();
 
-    
     // Create an instance of SerializedData
     SerializedData serializedData;
 
     // Call the serialize function on the MACFrame
     std::vector<uint8_t> binaryData = serializedData.serialize(macFrame);
 
-    // Print the binary data
-    std::cout << "Serialized binary data:" << std::endl;
-    for (const auto& byte : binaryData) {
-        std::cout << std::bitset<8>(byte) << " ";
-    }
-    std::cout << std::endl;
-    
+    // Save the binary data to a file
+    std::string filename = "binary_data.bin";
+    std::ofstream outputFile(filename, std::ios::binary);
+    outputFile.write(reinterpret_cast<const char*>(binaryData.data()), binaryData.size());
+    outputFile.close();
+
+    // Read the binary data back from the file
+    std::ifstream inputFile(filename, std::ios::binary);
+    inputFile.seekg(0, std::ios::end);
+    std::streampos fileSize = inputFile.tellg();
+    inputFile.seekg(0, std::ios::beg);
+
+    std::vector<uint8_t> fileData(fileSize);
+    inputFile.read(reinterpret_cast<char*>(fileData.data()), fileSize);
+    inputFile.close();
+
     // Deserialize the MACFrame
-    MACFrame deserializedMACFrame = serializedData.deserialize(binaryData);
+    MACFrame deserializedMACFrame = serializedData.deserialize(fileData);
     std::cout << "\nDeserialized MACFrame:\n";
     deserializedMACFrame.print();
 
@@ -79,6 +87,4 @@ int main() {
     // Print the deserialized HTTPRequestMSG
     std::cout << "\nDeserialized HTTPRequestMSG:\n";
     deserializedHTTPRequest.print();
-    
 }
-
