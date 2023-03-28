@@ -47,7 +47,7 @@ int main() {
     std::vector<uint8_t> binaryData = serializedData.serialize(macFrame);
 
     // Save the binary data to a file
-    std::string filename = "binary_data.bin";
+    std::string filename = "data.bin";
     std::ofstream outputFile(filename, std::ios::binary);
     outputFile.write(reinterpret_cast<const char*>(binaryData.data()), binaryData.size());
     outputFile.close();
