@@ -62,6 +62,14 @@ int main() {
     inputFile.read(reinterpret_cast<char*>(fileData.data()), fileSize);
     inputFile.close();
 
+    // Print the binary data read from the file
+    std::cout << std::endl;
+    std::cout << "Binary data read from file:" << std::endl;
+    for (const auto& byte : fileData) {
+        std::cout << std::bitset<8>(byte) << " ";
+    }
+    std::cout << std::endl;
+
     // Deserialize the MACFrame
     MACFrame deserializedMACFrame = serializedData.deserialize(fileData);
     std::cout << "\nDeserialized MACFrame:\n";
