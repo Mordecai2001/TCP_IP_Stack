@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		http_post_request.txt = http_post_request.txt
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP_IP_Test", "TCP_IP_Test\TCP_IP_Test.vcxproj", "{AB9E5D08-5B01-4786-BF27-F44670679D82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,14 @@ Global
 		{4AA3768B-5A74-48B5-9DE2-3684BABCAA6E}.Release|x64.Build.0 = Release|x64
 		{4AA3768B-5A74-48B5-9DE2-3684BABCAA6E}.Release|x86.ActiveCfg = Release|Win32
 		{4AA3768B-5A74-48B5-9DE2-3684BABCAA6E}.Release|x86.Build.0 = Release|Win32
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Debug|x64.ActiveCfg = Debug|x64
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Debug|x64.Build.0 = Debug|x64
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Debug|x86.ActiveCfg = Debug|Win32
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Debug|x86.Build.0 = Debug|Win32
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Release|x64.ActiveCfg = Release|x64
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Release|x64.Build.0 = Release|x64
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Release|x86.ActiveCfg = Release|Win32
+		{AB9E5D08-5B01-4786-BF27-F44670679D82}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
