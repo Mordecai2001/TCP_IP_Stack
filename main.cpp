@@ -14,7 +14,7 @@ int main() {
 
     // Print the HTTPRequestMSG
     std::cout << "HTTPRequestMSG:\n";
-    httpRequest.print();
+    httpRequest.toString();
 
     // Create a TCPSegment
     TCPSegment tcpSegment;
@@ -22,7 +22,7 @@ int main() {
 
     // Print the TCPSegment
     std::cout << "\nTCPSegment:\n";
-    tcpSegment.print();
+    tcpSegment.toString();
 
     // Create an IPPacket
     IPPacket ipPacket;
@@ -30,7 +30,7 @@ int main() {
 
     // Print the IPPacket
     std::cout << "\nIPPacket:\n";
-    ipPacket.print();
+    ipPacket.toString();
 
     //create a MACFrame
     MACFrame macFrame;
@@ -38,7 +38,7 @@ int main() {
 
     //print the MACFrame
     std::cout << "\nMACFrame:\n";
-    macFrame.print();
+    macFrame.toString();
 
     // Create an instance of SerializedData
     SerializedData serializedData;
@@ -73,26 +73,26 @@ int main() {
     // Deserialize the MACFrame
     MACFrame deserializedMACFrame = serializedData.deserialize(fileData);
     std::cout << "\nDeserialized MACFrame:\n";
-    deserializedMACFrame.print();
+    deserializedMACFrame.toString();
 
     // Retrieve the deserialized IPPacket from the deserialized MACFrame
     IPPacket deserializedIPPacket = deserializedMACFrame.getIPPacket();
 
     // Print the deserialized IPPacket
     std::cout << "\nDeserialized IPPacket:\n";
-    deserializedIPPacket.print();
+    deserializedIPPacket.toString();
 
     // Retrieve the deserialized TCPSegment from the deserialized IPPacket
     TCPSegment deserializedTCPSegment = deserializedIPPacket.getTCPSegment();
 
     // Print the deserialized TCPSegment
     std::cout << "\nDeserialized TCPSegment:\n";
-    deserializedTCPSegment.print();
+    deserializedTCPSegment.toString();
 
     // Retrieve the deserialized HTTPRequestMSG from the deserialized TCPSegment
     HTTPRequestMSG deserializedHTTPRequest = deserializedTCPSegment.getHTTPRequestMSG();
 
     // Print the deserialized HTTPRequestMSG
     std::cout << "\nDeserialized HTTPRequestMSG:\n";
-    deserializedHTTPRequest.print();
+    deserializedHTTPRequest.toString();
 }

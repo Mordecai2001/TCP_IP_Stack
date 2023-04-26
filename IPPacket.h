@@ -10,7 +10,7 @@ public:
     void setIPHeader(const IPHeader& newIPHeader);
     const TCPSegment& getTCPSegment() const;
     void setTCPSegment(const TCPSegment& newTCPSegment);
-    void print() const;
+    void toString() const;
 
 private:
     void initializeIPHeaderDefaults();

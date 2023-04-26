@@ -27,7 +27,7 @@ void IPPacket::setTCPSegment(const TCPSegment& newTCPSegment) {
     tcpSegment = newTCPSegment;
 }
 
-void IPPacket::print() const {
+void IPPacket::toString() const {
     const IPHeader& ipHeader = getIPHeader();
     std::cout << "\nIP Header:" << std::endl;
     std::cout << "Version: " << static_cast<unsigned>(ipHeader.getVersion()) << std::endl;

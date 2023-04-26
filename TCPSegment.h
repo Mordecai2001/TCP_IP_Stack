@@ -14,7 +14,7 @@ public:
     const HTTPRequestMSG& getHTTPRequestMSG() const;
     void setHTTPRequestMSG(const HTTPRequestMSG& newHTTPRequestMSG);
 
-    void print() const;
+    void toString() const;
 
 
 private:

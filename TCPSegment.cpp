@@ -23,7 +23,7 @@ void TCPSegment::setHTTPRequestMSG(const HTTPRequestMSG& newHTTPRequestMSG) {
     httpRequestMSG = newHTTPRequestMSG;
 }
 
-void TCPSegment::print() const {
+void TCPSegment::toString() const {
     const TCPHeader& tcpHeader = getTCPHeader();
     std::cout << "\nTCP Header:" << std::endl;
     std::cout << "Source port: " << unsigned(tcpHeader.getSourcePort()) << std::endl;

@@ -16,7 +16,7 @@ public:
     const std::map<std::string, std::string>& getHeaders() const;
     const std::string& getBody() const;
     void setBody(const std::string& newBody);
-    void print() const;
+    void toString() const;
     void parseRequestLine(const std::string& line);
     void parseHeaderField(const std::string& line);
     void parseSerializedHTTPRequest(const std::string& serializedHTTPRequest);

@@ -15,7 +15,7 @@ public:
     const IPPacket& getIPPacket() const;
     void setIPPacket(const IPPacket& newIPPacket);
 
-    void print() const;
+    void toString() const;
     void printMACAddress(uint64_t macAddress) const;
     const std::string& getSerializedHTTPRequest() const;
     void setSerializedHTTPRequest(const std::string& serializedHTTPRequest);

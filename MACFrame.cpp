@@ -25,7 +25,7 @@ void MACFrame::setIPPacket(const IPPacket& newIPPacket) {
     ipPacket = newIPPacket;
 }
 
-void MACFrame::print() const {
+void MACFrame::toString() const {
     std::cout << "\nMAC Header:\n";
 
     std::cout << "Source MAC: ";

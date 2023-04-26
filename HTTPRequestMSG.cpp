@@ -60,7 +60,7 @@ void HTTPRequestMSG::setBody(const std::string& newBody) {
     body = newBody;
 }
 
-void HTTPRequestMSG::print() const {
+void HTTPRequestMSG::toString() const {
     std::cout<<"\n" << getRequestMethod() << getUri() << getHttpVersion() << std::endl;
     for (const auto& header : getHeaders()) {
         std::cout << header.first << ": " << header.second << std::endl;
